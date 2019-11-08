@@ -130,3 +130,141 @@ There is a better way to do this: bind a method for checking the user join statu
 ```
 
 This concludes the thursday lesson; the following is for the friday lesson.
+
+The Friday lesson started with finishing up with data flow between components. As the @Input() decorator was addressed in the Thursday lesson, its 'counterpart', @Output() was introduced
+
+```
+In the ProjectDetailComponent:
+@Output() userJoinEmitter = new EventEmitter<string>();
+private join(): void {
+    alert('Mess with the best, die like ' + this.name);
+    this.alreadyJoined = true;
+    this.userJoinEmitter.emit('User joined the project');
+  }
+```
+
+This emits an event when the user joined that is raised in the template of the parent component (ProjectView).
+The child component tag within the HTML of the parent component looks as follows:
+```
+<app-project-details [name]="projectName" (userJoinEmitter)="userJoined($event)"></app-project-details>
+```
+
+The emitter is bound to the userJoined method of the ProjectView component, which is detailed as follows:
+```
+  userJoined(){
+    console.log('Parent received user joined event');
+  }
+```
+
+Next, we deleted the join button in the project detail component in order to not confuse the user about an unuable and unnecessary button. For this we used the NgIf directive:
+
+```
+<div *ngIf="!alreadyJoined">
+        <button (click)="join()" [disabled]="askHodor()">Join</button>
+    </div>
+```
+
+This concludes our work on the Project Detail component and we looked at the team and task component. For this, we create the project team and team member component:
+```
+ng generate component ProjectTeam
+ng generate component TeamMember
+```
+
+We want to include these components hierarchically in the Project view component:
+```
+ProjectView:
+<app-project-team></app-project-team>
+ProjectTeam:
+<app-team-member></app-team-member>
+```
+
+We want the project team to have members, so we create an array of the members in the team component:
+```
+teamMembers: string[] = ['Tick', 'Trick', 'Track'];
+```
+
+We next learn about the NgFor directive, which 'replicates' the respective element for every element in the list/array (in this case the teamMembers array). 
+It creates a local template variable that is valid within the scope of the component in the template:
+```
+<app-team-member *ngFor="let member of teamMembers" [memberName]="member"></app-team-member>
+```
+
+The member local template variable is bound to the memberName property of the team member component, and needs to be included through the Input directive of the team member component:
+```
+@Input() memberName: string;
+```
+
+with the memberName shown through an interpolation in the respective template:
+```
+{{memberName}}
+```
+
+We now want the user to be able to join the project team, i.e. we need to add some value that we defined in the project view component to the array in the team component.
+For this we create another input directive for  the project team component:
+```
+@Input() newUser:string;
+```
+and let the component listen to any changes. When the name of the user is set (changes from the empty string to a more meaningful one), it triggers a change that is detected through the NgOnChanges change detector (that implements the OnChanges interface):
+```
+export class ProjectTeamComponent implements OnInit, OnChanges {
+ngOnChanges(){
+    if(this.newUser !== ''){
+      this.teamMembers.push(this.newUser);
+    }
+  }
+```
+
+with the project view component being as follows (template and ts):
+```
+<app-project-team [newUser]="userName"></app-project-team>
+userName: string = '';
+userJoined(){
+    console.log('Parent received user joined event');
+    this.userName = 'You';
+  }
+```
+
+This allows us to add new users to the project view and we can focus on the last component, the task list. For this we generate the task list component, as well as the starters, main and desserts component:
+```
+ng generate component ProjectTasks
+ng generate component Starters
+ng generate component Main
+ng generate component Desserts
+```
+
+and relate them hierarchically to one another:
+```
+ProjectView:
+<app-project-tasks></app-project-tasks>
+ProjectTasks:
+<app-starters></app-starters>
+<app-main></app-main>
+<app-desserts></app-desserts>
+```
+
+In order to selectively show these components based on the value of a property (e.g. which one to select), we use the NgSwitch directive by wrapping them into an HTML element:
+```
+<div [ngSwitch]="taskChoice">
+<app-starters></app-starters>
+<app-main></app-main>
+<app-desserts></app-desserts>
+</div>
+```
+
+This selects components that are annotated with the correct *ngSwitchCase binding to be included in the DOM. For this, the taskChoice property is set and the switch cases are put into the menu items:
+```
+taskChoice: string = 'desserts';
+<app-starters *ngSwitchCase="'starters'"></app-starters>
+<app-main *ngSwitchCase="'mains'"></app-main>
+<app-desserts *ngSwitchCase="'desserts'"></app-desserts>
+```
+
+Finally, we want to be able to switch between the components that are rendered by using html elements that change the taskChoice property by clicking on them:
+```
+    <div (click)="taskChoice = 'starters'">Starters</div>
+    <app-starters *ngSwitchCase="'starters'"></app-starters>
+    <div (click)="taskChoice = 'mains'">Mains</div>
+    <app-main *ngSwitchCase="'mains'"></app-main>
+    <div (click)="taskChoice = 'desserts'">Desserts</div>
+    <app-desserts *ngSwitchCase="'desserts'"></app-desserts>
+```
