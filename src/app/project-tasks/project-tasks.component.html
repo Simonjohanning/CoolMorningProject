@@ -1,0 +1,8 @@
+<div [ngSwitch]="taskChoice">
+    <div (click)="taskChoice = 'starters'">Starters</div>
+    <app-starters *ngSwitchCase="'starters'"></app-starters>
+    <div (click)="taskChoice = 'mains'">Mains</div>
+    <app-main *ngSwitchCase="'mains'"></app-main>
+    <div (click)="taskChoice = 'desserts'">Desserts</div>
+    <app-desserts *ngSwitchCase="'desserts'"></app-desserts>
+</div>

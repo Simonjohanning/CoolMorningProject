@@ -1,0 +1,13 @@
+<div>
+    <h2>{{name}}</h2>
+    <p>Some project text</p>
+    <h4>Goal</h4>
+    <p>Some more text</p>
+    <input [(ngModel)]="motivation">
+    <div>
+        Your motivation to join: {{motivation}}
+    </div>
+    <div *ngIf="!alreadyJoined">
+        <button (click)="join()" [disabled]="askHodor()">Join</button>
+    </div>
+</div>
