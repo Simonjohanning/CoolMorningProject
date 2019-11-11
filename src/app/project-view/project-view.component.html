@@ -1,5 +1,5 @@
 {{projectName}}
 
-<app-project-details [name]="projectName" (userJoinEmitter)="userJoined($event)"></app-project-details>
+<app-project-details [project]="selectedProject" (userJoinEmitter)="userJoined($event)"></app-project-details>
 <app-project-team [newUser]="userName"></app-project-team>
 <app-project-tasks></app-project-tasks>

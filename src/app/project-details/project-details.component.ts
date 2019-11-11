@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Project } from '../dataTypes';
 
 @Component({
   selector: 'app-project-details',
@@ -7,7 +8,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class ProjectDetailsComponent implements OnInit {
 
-  @Input() name: string;
+  @Input() project: Project;
   @Output() userJoinEmitter = new EventEmitter<string>();
   private thouShaltNotJoin: boolean;
   private alreadyJoined: boolean = false;
@@ -23,7 +24,7 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   private join(): void {
-    alert('Mess with the best, die like ' + this.name);
+    alert('Mess with the best, die like ' + this.project.title);
     this.alreadyJoined = true;
     this.userJoinEmitter.emit('User joined the project');
   }

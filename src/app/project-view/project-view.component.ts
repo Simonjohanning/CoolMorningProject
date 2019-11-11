@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StoreService } from '../store.service';
+import { Project } from '../dataTypes';
 
 @Component({
   selector: 'app-project-view',
@@ -7,9 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProjectViewComponent implements OnInit {
 
-  private projectName: string = 'Cool Project';
+  private selectedProject: Project;
   userName: string = '';
-  constructor() { }
+
+  
+  constructor(private store: StoreService) {
+    this.selectedProject = this.store.projects[0];
+   }
 
   ngOnInit() {
   }
