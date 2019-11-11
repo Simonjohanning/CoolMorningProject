@@ -267,4 +267,5 @@ Finally, we want to be able to switch between the components that are rendered b
     <app-main *ngSwitchCase="'mains'"></app-main>
     <div (click)="taskChoice = 'desserts'">Desserts</div>
     <app-desserts *ngSwitchCase="'desserts'"></app-desserts>
-```
+```#   C o o l M o r n i n g P r o j e c t  
+ 
