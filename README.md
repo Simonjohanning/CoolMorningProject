@@ -267,5 +267,109 @@ Finally, we want to be able to switch between the components that are rendered b
     <app-main *ngSwitchCase="'mains'"></app-main>
     <div (click)="taskChoice = 'desserts'">Desserts</div>
     <app-desserts *ngSwitchCase="'desserts'"></app-desserts>
-```#   C o o l M o r n i n g P r o j e c t  
- 
+```
+
+For the Monday session, we looked at services after recapping the concepts from last week. 
+
+Lets start with a service to provide the project data take care of data handling. For this we create a Project interface and some mock-data:
+```
+export interface Project {
+    id: string;
+    title: string;
+    description: string;
+    goal: string;
+    memberIds: string[];
+    taskIds: string[]; 
+}
+In projectView.ts:
+import {Project} from '../dataTypes';
+projects: Project[] = [
+    {
+      id: '0',
+      title: 'Project 1',
+      description: 'This is a text describing project 1',
+      goal: 'This project aims to do something cool',
+      memberIds: ['member1', 'member2'],
+      taskIds: []
+    },
+    {
+      id: '1',
+      title: 'Project 2',
+      description: 'This is a text describing project 2',
+      goal: 'This project aims to do something even cooler',
+      memberIds: ['member3', 'member2'],
+      taskIds: []
+    }
+  ]
+this.projectName = this.projects[0].title;
+```
+This puts the data together with the functionality of the component for the project view. 
+Components should be concerned with the user experience and nothing more. I.e. they should not provide the data, but only be concerned with its presentation. So lets create a service that handles data.
+
+```
+ng generate service Store
+```
+
+Now we move the data to the service to separate the view-related data from other data:
+```
+Store:
+public projects: Project[] = [
+    {
+      id: '0',
+      title: 'Project 1',
+      description: 'This is a text describing project 1',
+      goal: 'This project aims to do something cool',
+      memberIds: ['member1', 'member2'],
+      taskIds: []
+    },
+    {
+      id: '1',
+      title: 'Project 2',
+      description: 'This is a text describing project 2',
+      goal: 'This project aims to do something even cooler',
+      memberIds: ['member3', 'member2'],
+      taskIds: []
+    }
+  ]
+```
+In order to use the data from the store, the project view component has to include the service in the constructor (through dependency injection; don't forget to import it):
+```
+constructor(private store: StoreService){}
+```
+We can access the title of the project through the service now:
+```
+this.projectName = this.store.projects[0].title
+```
+
+We only display the title of the project, however, but we want other data to be more flexible as well; for this we need to provide the data to the child component.
+Currently it receives the project title through the Input decorator, so lets open it up to be a project:
+```
+In ProjectDetail.ts:
+@Input() project: Project;
+In ProjectView.html:
+<app-project-details [project]="selectedProject" (userJoinEmitter)="userJoined($event)"></app-project-details>
+```
+
+We don't use the title anymore, so lets change the template all together to make it more flexible:
+```
+ <h2>{{project.title}}</h2>
+    <p>{{project.description}}</p>
+    <h4>Goal</h4>
+    <p>{{project.goal}}</p>
+```
+
+There is a design issue with the service, though: The projects are public, so everyone could change them if they wanted. 
+This doesn't need to be malicious, but could be something more reasonable in another part of the application. 
+We want the access to be controlled through methods to also make it a little more flexible/controllable:
+```
+In Store:
+private projects: Project[] = [....]
+retrieveProject(index: number): Project{
+    return this.projects[index];
+    }
+In ProjectView:
+this.selectedProject = this.store.retrieveProject(1);
+```
+
+This concludes the monday lesson and leads to the state the repository is at this time.
+  }
